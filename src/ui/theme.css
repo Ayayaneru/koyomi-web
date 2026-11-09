@@ -1,0 +1,2908 @@
+/* ===== 视觉基调：安静的器物感 ===== */
+
+:root {
+  --bg: #faf9f7;
+  --surface: #ffffff;
+  --fg: #1c1b19;
+  --muted: #6b6862;
+  --line: #e6e3de;
+  --accent: #3f5f4f;
+  --accent-soft: #eaf0ec;
+  --danger: #a8322d;
+  --warn: #9a6a12;
+  /* 节假日的红：和「危险」分开，语义不同 */
+  --festival: #b4453c;
+  --radius: 12px;
+  --gap: 12px;
+
+  /* Vant 主题覆盖 */
+  --van-primary-color: var(--accent);
+  --van-background: var(--bg);
+  --van-background-2: var(--surface);
+  --van-text-color: var(--fg);
+  --van-text-color-2: var(--muted);
+  --van-border-color: var(--line);
+  --van-radius-md: 10px;
+  --van-font-size-md: 15px;
+  --van-dialog-radius: 14px;
+  --van-popup-round-radius: 16px;
+  --van-danger-color: var(--danger);
+  --van-cell-font-size: 15px;
+  --van-field-label-color: var(--muted);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1115;
+    --surface: #171a20;
+    --fg: #e8e6e1;
+    --muted: #8a877f;
+    --line: #262a31;
+    --accent: #7fa890;
+    --accent-soft: #1d2622;
+    --danger: #d9736d;
+    --warn: #d3a95a;
+    --festival: #e59a92;
+  }
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/*
+ * 滚动条一出现，可用宽度就少十几像素，居中的内容会整体左移（桌面浏览器很明显）。
+ * 固定留出槽位，再用细一点的滚动条把它填上，就不会跳了。
+ */
+html {
+  scrollbar-gutter: stable;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--muted) 35%, transparent);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body {
+  overscroll-behavior-y: contain;
+  user-select: none;
+  -webkit-touch-callout: none;
+  padding-bottom: env(safe-area-inset-bottom);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+input,
+textarea,
+select {
+  user-select: text;
+  font-size: 16px; /* 低于 16px 时移动端会强制放大 */
+  font-family: inherit;
+}
+
+button {
+  font-family: inherit;
+  touch-action: manipulation;
+}
+
+#app {
+  max-width: 720px;
+  margin: 0 auto;
+  min-height: 100dvh;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ===== 布局基础 ===== */
+
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-body {
+  flex: 1;
+  padding: var(--gap) 16px calc(28px + env(safe-area-inset-bottom));
+}
+
+/* 卡片内部的分隔线（设置页把两块内容并进一张卡片时用） */
+.hr-soft {
+  height: 1px;
+  background: var(--line);
+}
+
+.section-title {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 22px 2px 8px;
+  text-transform: none;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+.card + .card {
+  margin-top: 10px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 13px;
+}
+
+.tiny {
+  font-size: 12px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty {
+  padding: 36px 12px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.divider {
+  height: 1px;
+  background: var(--line);
+  margin: 12px 0;
+}
+
+/* ===== 按钮 ===== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--fg);
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+  padding: 6px 8px;
+}
+
+.btn-danger {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 35%, var(--line));
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+/* 顶栏右侧的动作按钮（保存 / 删除）统一宽度。
+   2026-11-01：用户要求保存做宽、和日记编辑器的删除一样宽；
+   用 min-width 而不是 padding，带图标的「删除」和不带图标的「保存」量出来才一样宽。 */
+.btn-act {
+  min-width: 68px;
+}
+
+/* ===== 顶部栏 ===== */
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: calc(10px + env(safe-area-inset-top)) 12px 10px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.app-header h1 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+/* 首页左上角的字标：一枚「暦」小方印 + KOYOMI（和 app 图标同一个字） */
+.app-header .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-seal {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: var(--accent);
+  color: #f7f4ea;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif CJK SC', serif;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.brand-word {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--fg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.icon-btn:active {
+  background: var(--accent-soft);
+}
+
+/* ===== 首页 ===== */
+
+.home-hero {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 2px 6px;
+}
+
+/* 右边那块「今天」：固定两行高，条数再多也不换行、不把下面的卡片推下去 */
+.hero-today {
+  flex: none;
+  min-width: 100px;
+  max-width: 48%;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+}
+
+.hero-today .ht-k {
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  line-height: 1.2;
+}
+
+.hero-today .ht-v {
+  font-size: 12px;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-today.empty .ht-v {
+  color: var(--muted);
+}
+
+.home-hero .greet {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.home-hero .date {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.home-card {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px 14px;
+  color: var(--fg);
+  min-height: 104px;
+  transition: border-color 0.15s ease;
+}
+
+.home-card:active {
+  border-color: var(--accent);
+}
+
+.home-card .label {
+  margin-top: 12px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.home-card .hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.home-card svg {
+  color: var(--accent);
+}
+
+/* 首页「今天」里的三组：待办在最上、已完成在最下，中间用一条线分开 */
+.today-group + .today-group {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.today-group-label {
+  margin: 0 2px 2px;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+/* 能点的行（待办 / 日程）：按下去给一点反馈 */
+.list-item.tap {
+  cursor: pointer;
+}
+
+.list-item.tap:active {
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.row-arrow {
+  flex: none;
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+/* 已完成那组灰一点，不抢待办 */
+.avatar.done {
+  background: color-mix(in srgb, var(--line) 45%, var(--surface));
+  color: var(--muted);
+}
+
+.today-more {
+  margin: 2px 2px 0;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+/* ===== 表单 ===== */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--fg);
+  border-radius: 10px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  border-color: var(--accent);
+}
+
+.textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.seg button {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--fg);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.seg button.on {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--fg);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.chip.on {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.error-text {
+  color: var(--danger);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* 报错 + 「重试」并排 */
+.error-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.error-row .error-text {
+  margin-top: 2px;
+  line-height: 1.45;
+}
+
+/*
+ * 模型设置页的保存条：一条保存管整页（聊天模型 + 视觉模型），
+ * 所以放在页面最下面并常驻，别再让人猜「这是保存上面那段还是整页」。
+ */
+.save-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 6;
+  margin: 20px -16px calc(-28px - env(safe-area-inset-bottom));
+  padding: 10px 16px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.save-bar-hint {
+  margin: 0 2px 6px;
+}
+
+/* ===== 时间轴 / 列表 ===== */
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 2px;
+  border-bottom: 1px solid var(--line);
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex: none;
+}
+
+.switch-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: transparent;
+  flex: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+}
+
+.switch-dot.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* 一行一个开关：左边标题 + 一句说明，右边圆点 */
+.switch-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.switch-row + .switch-row {
+  border-top: 1px solid var(--line);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 11px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  flex: none;
+}
+
+.badge.due {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 40%, var(--line));
+}
+
+.badge.done {
+  color: var(--muted);
+}
+
+.banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: color-mix(in srgb, var(--warn) 10%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--warn) 30%, var(--line));
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+.banner.danger {
+  background: color-mix(in srgb, var(--danger) 8%, var(--surface));
+  border-color: color-mix(in srgb, var(--danger) 30%, var(--line));
+}
+
+/* 跨域提示：浏览器直连不通的地址，给一句话 + 一键换成本机转发 */
+.proxy-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--warn);
+}
+
+.link-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* 设置页：识图当前实际会用谁（降级时必须是黄色，不能悄悄换掉） */
+.vision-status {
+  margin-top: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+
+.vision-status.ok {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.vision-status.warn {
+  background: color-mix(in srgb, var(--warn) 12%, var(--surface));
+  color: var(--warn);
+}
+
+.vision-status.none {
+  background: color-mix(in srgb, var(--line) 45%, var(--surface));
+  color: var(--muted);
+}
+
+/* 导入日程页：这次是降级跑的 */
+.degrade-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--warn) 12%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--warn) 28%, var(--line));
+  color: var(--warn);
+  font-size: 12.5px;
+}
+
+.degrade-tag {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--warn) 18%, transparent);
+  font-size: 11px;
+}
+
+/* ===== 日程三视图 ===== */
+
+.view-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: var(--accent-soft);
+  border-radius: 10px;
+}
+
+.view-tabs button {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 6px 0;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.view-tabs button.on {
+  background: var(--surface);
+  color: var(--fg);
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+}
+
+.date-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 10px 0 8px;
+}
+
+.date-nav .title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* 日程页：整屏固定高度，周表在中间伸满，下面的面板不被推出去 —— 一页看完 */
+.schedule-page {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.schedule-page .page-body {
+  min-height: 0;
+  overflow-y: auto;
+  /* 2026-11-01：底部留白统一 16px（周视图原来 8、月视图原来 28，切视图时面板底边会跳） */
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+}
+
+/* 中间这些块按内容高度排，不要被 flex 拉高 */
+.schedule-page .page-body > * {
+  flex: none;
+}
+
+/* 月视图内容不满屏时，面板贴着底部 —— 和周视图位置一致 */
+.schedule-page .page-body:not(.week-fit) > .day-panel {
+  margin-top: auto;
+}
+
+.schedule-page .page-body.week-fit {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.page-body.week-fit .week-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  /* 手机上不需要滚动条，主要是别让它出现时把表格往左挤 */
+  scrollbar-width: none;
+}
+
+.page-body.week-fit .week-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.page-body.week-fit .day-panel {
+  flex: none;
+  margin-top: 8px;
+}
+
+.week-table {
+  display: grid;
+  grid-template-columns: 34px repeat(7, 1fr);
+  font-size: 11px;
+  border-top: 1px solid var(--line);
+  height: 100%;
+}
+
+.week-table .cell {
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  min-height: 0;
+  position: relative;
+  padding: 2px;
+  cursor: pointer;
+}
+
+.cell.slot-selected {
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 4px;
+}
+
+/* 2026-11-02：选中的那一格再盖一层「框」在事件块上面（块是 z-index 2）。
+   只给格子加底色的话，有事件的格子整块被事件盖住，根本看不出点到哪去了。 */
+.cell-pick {
+  z-index: 3;
+  pointer-events: none;
+  border: 2px solid var(--accent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--surface) 55%, transparent);
+}
+
+.week-table .cell.timecol {
+  color: var(--muted);
+  text-align: right;
+  padding-right: 4px;
+  font-size: 10px;
+}
+
+/* 周表头：上面一行「周一」，下面一行日期数字，两行分开就不会出现「一 5」这种混排 */
+.wk-corner {
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+
+.wk-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 3px 0 4px;
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  cursor: pointer;
+  user-select: none;
+}
+
+.wk-head.selected {
+  background: var(--accent-soft);
+}
+
+.wk-head.selected .wk-date {
+  color: var(--accent);
+}
+
+/* 今天：数字变绿 + 下面一道短横线；「选中」用底色，两者不冲突 */
+.wk-head.today .wk-date {
+  color: var(--accent);
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 3px;
+}
+
+.wk-head.today .wk-date::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 16px;
+  height: 2px;
+  border-radius: 1px;
+  transform: translateX(-50%);
+  background: var(--accent);
+}
+
+.wk-dow {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  /* 和月视图表头（.month-head）用同一套字：系统无衬线、小字、宽字距 */
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+}
+
+.wk-head.selected .wk-dow {
+  color: var(--accent);
+}
+
+.wk-date {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.wk-tag {
+  font-size: 9px;
+  line-height: 1.2;
+  padding: 0 2px;
+  border-radius: 3px;
+  border: 1px solid currentColor;
+  font-style: normal;
+}
+
+.wk-tag.off,
+.mc-tag.off {
+  color: var(--festival);
+}
+
+.wk-tag.work,
+.mc-tag.work {
+  color: var(--muted);
+  border-color: var(--line);
+}
+
+.week-event {
+  /* cell 是 position: relative，事件块必须是定位元素 + z-index 才能盖在格线之上被点到 */
+  position: relative;
+  z-index: 2;
+  /* 2026-11-02：块跨几格就切成几段（grid-auto-rows: 1fr），
+     周表行高恒等，所以段边界正好压在格子线上；padding 挪进 .we-sec，否则整块会偏 */
+  display: grid;
+  grid-auto-rows: 1fr;
+  background: var(--accent-soft);
+  border-left: 2px solid var(--accent);
+  border-radius: 5px;
+  font-size: 10.5px;
+  line-height: 1.2;
+  overflow: hidden;
+  cursor: pointer;
+  /* 和下一格的块之间留 2px：不然上下两段（09:00–10:00 与 10:30–11:00）会连成一大块，
+     看着像一个 09:00–11:00 的事件。跨格块内部的段边界因此差 ≤1px，肉眼看不出来。 */
+  margin-bottom: 2px;
+}
+
+/* 块内的一段 = 一格 */
+.week-event .we-sec {
+  padding: 2px 4px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* 段和段之间的那条分隔虚线：只画在「这一格有内容」的段上，单条事件跨两格不会被切开 */
+.week-event .we-sec-line {
+  border-top: 1px dashed var(--line);
+}
+
+/* 做过的任务 / 写过的日记：不是一个时间段，画得淡一些 */
+.week-event.aux {
+  background: color-mix(in srgb, var(--line) 35%, var(--surface));
+  border-left-color: color-mix(in srgb, var(--muted) 55%, transparent);
+}
+
+.week-event.aux .we-time {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* 2026-11-01：勾/日记符号从时间前挪到任务名前（✓喂鱼），字距留一点点 */
+.week-event .we-mark {
+  font-style: normal;
+  font-size: 9px;
+  line-height: 1;
+  color: var(--muted);
+  margin-right: 2px;
+}
+
+/* 一格挤两件时，每件两行（时间 / 标题）上下叠 */
+.week-event .we-item {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+  font-size: 10px;
+  line-height: 1.15;
+}
+
+.week-event .we-item + .we-item {
+  /* 一行时间 + 一行标题，两条正好四行；这里只留 1px 虚线，不再撑出额外的行 */
+  border-top: 1px dashed var(--line);
+}
+
+.week-event .we-time {
+  font-size: 9px;
+  line-height: 1.1;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 日记那个小书本图标，跟文字基线对齐 */
+.week-event .we-icon {
+  vertical-align: -1px;
+  margin-right: 1.5px;
+  opacity: 0.75;
+}
+
+.week-event .we-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===== 月视图 ===== */
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px 0;
+  margin: 0 -6px;
+}
+
+.month-head {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-align: center;
+  padding: 2px 0 6px;
+}
+
+.month-cell {
+  background: transparent;
+  padding: 0 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  /* 2026-11-01：46 → 55。面板下移后 6 行和面板之间空出 ~74px，每行分 9px 正好 */
+  min-height: 55px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* 选中底色只罩「数字 + 农历」这一块，下面的点点留在外面 —— 方框不再是长方形 */
+.mc-face {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 3px 8px 5px;
+  border-radius: 10px;
+  min-width: 40px;
+}
+
+/* 点点也在框里了：它属于这一天，不该让人猜 */
+.mc-face .mc-dots {
+  margin-top: 2px;
+  min-height: 4px;
+}
+
+.month-cell.out {
+  color: var(--muted);
+  opacity: 0.5;
+}
+
+.month-cell.out .mc-sub {
+  opacity: 0.6;
+}
+
+/* 选中用底色，今天用数字下面的短横线，两者可以同时出现 */
+.month-cell.selected .mc-face {
+  background: var(--accent-soft);
+}
+
+.mc-top {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  min-height: 20px;
+  width: 100%;
+}
+
+.mc-day {
+  position: relative;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.05;
+  padding-bottom: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.month-cell.out .mc-day {
+  font-weight: 400;
+}
+
+.month-cell.today .mc-day {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.month-cell.today .mc-day::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 18px;
+  height: 2px;
+  border-radius: 1px;
+  transform: translateX(-50%);
+  background: var(--accent);
+}
+
+.mc-tag {
+  font-size: 9px;
+  line-height: 1.3;
+  padding: 0 1px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-style: normal;
+  flex: none;
+}
+
+/* 2026-11-01：休/班改成挂在这个数字右上角的小上标。
+   原来绝对定位在格子的右上角，窄屏时数字（16px、两位数）几乎占满格子，休/班就压到数字上了。 */
+.mc-day .mc-tag {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  margin-left: 1px;
+  padding: 0;
+  font-size: 8.5px;
+  line-height: 1.15;
+}
+
+.mc-sub {
+  width: 100%;
+  text-align: center;
+  font-size: 10.5px;
+  line-height: 1.2;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 2026-11-01：节日小字不再标红，只比农历稍微重一点点 */
+.mc-sub.festival {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* 任务 / 日记在面板里用不同的图标底色，一眼分得清 */
+.avatar.task {
+  background: color-mix(in srgb, var(--warn) 16%, var(--surface));
+  color: var(--warn);
+}
+
+.avatar.diary {
+  background: color-mix(in srgb, var(--line) 45%, var(--surface));
+  color: var(--muted);
+}
+
+/* 新建/编辑弹窗里折叠起来的「更多选项」 */
+.more-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px 2px;
+  border: none;
+  border-top: 1px dashed var(--line);
+  background: none;
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.more-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 2px;
+}
+
+.day-panel {
+  margin-top: 16px;
+  padding: 12px 12px 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  /* 固定高度：周↔月切换、条目多少都不改变版面。
+     2026-11-01：196 → 180。周视图表最后一格（20:00–22:00）被面板挤掉了，面板收一圈把这 16px 还给表格；
+     条目内边距同时 12 → 8，两条并排时 180 仍能完整显示、不触发内部滚动。 */
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.day-panel .list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+/* 面板里的条目不再画横线（分隔线交给留白），两条并排时更干净。
+   注意 .list-item 用的是 border-bottom，所以要把每一条的底边都去掉，不能只去 top。 */
+.day-panel .list-item,
+.day-panel .list-item + .list-item {
+  border-top: none;
+  border-bottom: none;
+  /* 2026-11-01：12 → 8，两条塞进 180 的面板里也不用滚动 */
+  padding: 8px 2px;
+}
+
+.day-panel .list::-webkit-scrollbar {
+  width: 0;
+}
+
+.dp-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.mc-dots {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-top: auto;
+  min-height: 4px;
+}
+
+.mc-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.75;
+}
+
+/* 任务用黄、日记用灰，和面板里的图标底色对应 */
+.mc-dot.task {
+  background: var(--warn);
+}
+
+.mc-dot.diary {
+  background: var(--muted);
+}
+
+/* ===== 导入日程：选图与识别状态 ===== */
+
+.pick-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 104px;
+  margin-top: 12px;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.pick-empty:active {
+  background: var(--bg);
+}
+
+.pick-empty.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pick-filled {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.pick-thumb {
+  width: 92px;
+  height: 92px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  flex: none;
+}
+
+.recognizing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, currentColor 28%, transparent);
+  border-top-color: currentColor;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== 任务 ===== */
+
+.task-list {
+  list-style: none;
+  margin: 0;
+  padding: 2px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.task-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.task-row:last-child {
+  border-bottom: none;
+}
+
+/* 「已完成」那组没有左边的圆圈，往里缩一格，图标和上面那组对齐 */
+.task-list.indent .task-row {
+  padding-left: 36px;
+}
+
+/*
+ * 「最近做完的」是 .list.card（内边距 0），补 14px 内边距让前面的圆圈和
+ * 「要做的」那组的圆圈落在同一条竖线上；间距也用 10px，图标才能对齐到 67px。
+ */
+.log-list .list-item {
+  padding-left: 14px;
+  gap: 10px;
+}
+
+.task-check {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: transparent;
+  /* 勾常驻但很淡：光一个空圆圈看不出来是「点这里完成」 */
+  color: color-mix(in srgb, var(--muted) 45%, transparent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.task-check:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.task-check:active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* 「最近做完的」每行前面的叉：和「要做的」那个勾一一对应，点它就是撤销这次完成 */
+.task-check.undo {
+  color: color-mix(in srgb, var(--danger) 55%, transparent);
+}
+
+.task-check.undo:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.task-check.undo:active {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+
+.task-icon {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 11px;
+  background: var(--accent-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.task-icon.sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+/* 图标素材是 72×72 的 SVG，两套画法（彩色 / 线条）只是换文件 */
+.task-glyph {
+  display: block;
+  flex: none;
+}
+
+.task-glyph-text {
+  display: block;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.chip-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* 图标选择器：5×5 方格 */
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.icon-cell {
+  height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.icon-cell.on {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.task-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title {
+  font-size: 15px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-title.off {
+  color: var(--muted);
+}
+
+.task-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.due-chip {
+  flex: none;
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+
+.due-chip.overdue {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--danger);
+}
+
+.due-chip.soon {
+  background: color-mix(in srgb, var(--warn) 14%, transparent);
+  color: var(--warn);
+}
+
+.due-chip.later {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.due-chip.done,
+.due-chip.none {
+  background: color-mix(in srgb, var(--line) 55%, transparent);
+  color: var(--muted);
+}
+
+.task-hint {
+  margin: 8px 2px 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.task-empty {
+  padding: 18px 2px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* 「查看全部」：虚线框，比实心按钮轻 */
+.more-link {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 9px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.more-link:active {
+  background: var(--bg);
+}
+
+/* 全部列表用的弹层：标题固定，内容自己滚 */
+.list-sheet {
+  display: flex;
+  flex-direction: column;
+  max-height: 82vh;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--surface);
+}
+
+.list-sheet-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 16px 16px;
+}
+
+/* 弹层里再套一层卡片会显得重，去掉外框 */
+.task-list.bare {
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+/* 任务操作面板（底部弹出） */
+.sheet {
+  padding-bottom: calc(6px + env(safe-area-inset-bottom));
+  background: var(--surface);
+}
+
+.sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 18px 14px;
+}
+
+.sheet-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.sheet-item {
+  display: block;
+  width: 100%;
+  padding: 15px 18px;
+  border: none;
+  border-top: 1px solid var(--line);
+  background: none;
+  color: var(--fg);
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sheet-item:active {
+  background: var(--bg);
+}
+
+.sheet-item.danger {
+  color: var(--danger);
+}
+
+.sheet-item.cancel {
+  border-top: 8px solid var(--bg);
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ===== 日记 ===== */
+
+/* ===== 日记：今天卡片 + 时间线 ===== */
+
+.diary-search {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.diary-hero {
+  padding: 14px 14px 12px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line));
+  background: linear-gradient(
+    135deg,
+    var(--accent-soft),
+    color-mix(in srgb, var(--accent-soft) 35%, var(--surface))
+  );
+}
+
+.dh-day {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.dh-date {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.dh-icon {
+  color: var(--accent);
+  opacity: 0.45;
+}
+
+.dh-prompt {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.dh-moods {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.dh-moods .mood-chip {
+  width: 34px;
+  height: 34px;
+}
+
+.dh-written {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: 13.5px;
+  cursor: pointer;
+}
+
+.dh-mood {
+  flex: none;
+  color: var(--accent);
+}
+
+.diary-count {
+  margin: 10px 2px 0;
+}
+
+.diary-month {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 20px 2px 8px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.diary-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* 左边日期栏 + 右边卡片，像时间线一样往下走 */
+.diary-item {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.diary-item + .diary-item {
+  margin-top: 10px;
+}
+
+.diary-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 9px;
+}
+
+.dd-day {
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.dd-week {
+  margin-top: 2px;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+
+.diary-date.today .dd-day,
+.diary-date.today .dd-week {
+  color: var(--accent);
+}
+
+.diary-card {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.diary-card:active {
+  border-color: var(--accent);
+}
+
+.dc-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dc-mood {
+  flex: none;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.dc-title {
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+.dc-pin {
+  flex: none;
+  color: var(--festival);
+}
+
+.dc-excerpt {
+  display: -webkit-box;
+  margin-top: 5px;
+  overflow: hidden;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--muted);
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.dc-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+/* 2026-11-01：标签自带颜色（浅底胶囊），颜色和底色由 chipStyle() 内联给 */
+.dc-tag {
+  padding: 1.5px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.dc-words {
+  margin-left: auto;
+}
+
+.diary-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 46px 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* 编辑器：上半截顶栏 + 心情，正文吃掉剩余高度 */
+.diary-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 12px 16px calc(14px + env(safe-area-inset-bottom));
+  background: var(--surface);
+}
+
+/* 输入法弹起来时把标签区收掉（正文本来被挤得只剩两行高） */
+.diary-editor.typing .de-tagbox {
+  display: none;
+}
+
+.de-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 日期框可以缩：右上角现在要塞「删除 + 保存」两个按钮 */
+.de-date {
+  flex: 1 1 0;
+  min-width: 0;
+  border: none;
+  background: none;
+  color: var(--fg);
+  font-size: 13px;
+  text-align: center;
+  outline: none;
+}
+
+.de-moods {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0 2px;
+}
+
+.de-title {
+  margin-top: 8px;
+  padding: 6px 0;
+  border: none;
+  background: none;
+  color: var(--fg);
+  font-size: 18px;
+  font-weight: 600;
+  outline: none;
+}
+
+.de-body {
+  flex: 1;
+  min-height: 0;
+  margin-top: 4px;
+  padding: 6px 0;
+  border: none;
+  background: none;
+  color: var(--fg);
+  font-size: 14.5px;
+  line-height: 1.7;
+  resize: none;
+  outline: none;
+}
+
+/* ===== 日记标签（丙：标签 + 颜色，每篇最多 3 个） ===== */
+
+.de-tagbox {
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.de-taghead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  min-height: 24px;
+}
+
+.de-taglabel {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+/* 右侧：0/3 计数，靠右对齐 */
+.de-tagcount {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 已选中的标签：浅底胶囊 + 一个 × */
+.pick-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border: none;
+  border-radius: 999px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.pick-chip .pk-x {
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.de-sug {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.sug-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2.5px 9px 2.5px 7px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.sug-chip i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+}
+
+/* 选中时用标签自己的颜色（底色和字色由内联 style 给），这里只去边框 */
+.sug-chip.on {
+  border-color: transparent;
+}
+
+/* 已经贴满 3 个：没选中的变淡，点了会提示 */
+.sug-chip.dim {
+  opacity: 0.4;
+}
+
+/* 常用标签行最后两个入口：新建标签、置顶（2026-11-01：都排到已有标签后面，不再靠右）
+   两个按钮固定同一个宽度，和上面的 2 字标签胶囊看着一样宽 */
+.sug-chip.tag-entry,
+.sug-chip.pin-entry {
+  width: 52px;
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+  color: var(--muted);
+}
+
+/* 置顶胶囊：置顶后实心一点（文字不再变「已置顶」，宽度才守得住） */
+.sug-chip.pin-entry.on {
+  border-color: transparent;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.tag-sheet-new {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px 0;
+}
+
+.de-newtag-input {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: none;
+  color: var(--fg);
+  font-size: 12.5px;
+  outline: none;
+}
+
+.de-colors {
+  display: flex;
+  gap: 6px;
+}
+
+.de-color {
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  flex: none;
+}
+
+.de-color.on {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px var(--fg);
+}
+
+.de-tagfoot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* 管理标签的底部弹层 */
+.tag-sheet {
+  display: flex;
+  flex-direction: column;
+  max-height: 76vh;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  background: var(--surface);
+}
+
+.tag-sheet-head {
+  display: flex;
+  align-items: center;
+  padding: 16px 18px 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.tag-sheet-list {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0 18px;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.tag-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.tag-row:last-child {
+  border-bottom: none;
+}
+
+/* 标签名：点一下就地变成输入框（2026-11-03），不加「改名」按钮 */
+.tag-name {
+  min-width: 0;
+  padding: 3px 0;
+  cursor: text;
+  border-bottom: 1px dashed transparent;
+}
+
+@media (hover: hover) {
+  .tag-name:hover {
+    border-bottom-color: var(--line);
+  }
+}
+
+.tag-name-input {
+  min-width: 0;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 15px;
+  outline: none;
+}
+
+.tag-dot {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.tag-colors {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 0 2px 26px;
+}
+
+.tag-sheet-foot {
+  padding: 10px 18px 0;
+}
+
+/* 心情是实心色点：圆点本身就是按钮，不再套一圈边框 */
+.mood-chip {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  padding: 0;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mood-chip.on {
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* ===== 历史对话抽屉 ===== */
+
+.history-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg);
+}
+
+.history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 8px 16px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.history-item + .history-item {
+  margin-top: 2px;
+}
+
+.history-item.on {
+  background: var(--accent-soft);
+}
+
+.history-item.picking {
+  padding-left: 6px;
+}
+
+/* 多选工具条：全选 / 已选几个 / 删除 */
+.history-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px 10px;
+}
+
+.pick-box {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.pick-box.on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.history-item .ellipsis {
+  font-size: 13px;
+}
+
+/* ===== 聊天 ===== */
+
+.chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 14px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* 2026-11-01：超过一屏时右边的滚动条会把整段对话往左推。手机上不需要看见它，占 0 宽 */
+  scrollbar-width: none;
+  scrollbar-gutter: stable;
+}
+
+.chat-body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* 2026-11-02：flex 子项默认会被压缩。工具卡展开后内容一多，它自己被挤扁（overflow:hidden 再一裁），
+   于是「展开只能看见前三条」。统一不压缩，让 chat-body 自己去滚动。 */
+.chat-body > * {
+  flex: none;
+}
+
+.msg {
+  max-width: 88%;
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-size: 14.5px;
+  line-height: 1.62;
+  word-break: break-word;
+}
+
+/* 2026-11-03：对话正文要能长按选中、复制（body 上是 user-select: none）。
+   工具记录和错误提示也一并放开，报错信息经常要拷出来问人。 */
+.msg,
+.msg *,
+.tool-line,
+.tool-card {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+.msg.user {
+  align-self: flex-end;
+  background: var(--accent);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+  white-space: pre-wrap;
+}
+
+.msg.assistant {
+  align-self: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-bottom-left-radius: 4px;
+}
+
+.msg.assistant p {
+  margin: 0 0 8px;
+}
+
+.msg.assistant p:last-child {
+  margin-bottom: 0;
+}
+
+.msg.assistant pre {
+  background: color-mix(in srgb, var(--fg) 6%, var(--surface));
+  padding: 10px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 12.5px;
+}
+
+.msg.assistant code {
+  font-size: 0.92em;
+  background: color-mix(in srgb, var(--fg) 7%, var(--surface));
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+.msg.assistant pre code {
+  background: none;
+  padding: 0;
+}
+
+.msg.assistant table {
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.msg.assistant th,
+.msg.assistant td {
+  border: 1px solid var(--line);
+  padding: 4px 8px;
+}
+
+.tool-card {
+  align-self: flex-start;
+  width: 88%;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  color: var(--muted);
+  background: transparent;
+}
+
+.tool-card.ok {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  color: var(--accent);
+}
+
+.tool-card.fail {
+  border-color: color-mix(in srgb, var(--danger) 40%, var(--line));
+  color: var(--danger);
+}
+
+/* 一串工具调用折成一块（参考网页版助手的做法：默认收起，点开看每一步） */
+.tool-group {
+  align-self: flex-start;
+  width: 88%;
+  /* 2026-11-01：虚线 → 实线卡片 + 浅底。虚线细边框 + 11px 淡字在手机上会被看成一根分隔线 */
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  overflow: hidden;
+}
+
+/* 正在跑的这组：描边换成主题色，一眼看出后台在动 */
+.tool-group.running {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: color-mix(in srgb, var(--accent-soft) 55%, var(--surface));
+}
+
+.tool-group > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  color: var(--fg);
+  cursor: pointer;
+  list-style: none;
+}
+
+.tool-group > summary::-webkit-details-marker {
+  display: none;
+}
+
+.tool-group > summary::before {
+  content: '›';
+  display: inline-block;
+  font-size: 13px;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+
+.tool-group[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.tg-label {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* 「工具调用 · N 步」不许折行，让后面的工具名去省略 */
+.tg-count {
+  flex: none;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+/* 调用了哪些工具：折叠着也看得见 */
+.tg-name {
+  flex: 1;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 11.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tg-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* 进行中的小圆点：呼吸一下，比「进行中」三个字更显眼 */
+.tg-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: tg-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes tg-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.75);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.tg-fail {
+  flex: none;
+  color: var(--danger);
+}
+
+.tool-line {
+  padding: 6px 10px 6px 22px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+  word-break: break-word;
+}
+
+.tool-line.fail {
+  color: var(--danger);
+}
+
+.chat-input {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--line);
+}
+
+.chat-input textarea {
+  flex: 1;
+  min-height: 44px;
+  /* 142 = 5 行 × 24px 行高 + 上下各 10px 内边距 + 上下各 1px 边框。
+     取行高的整数倍，滚到底时顶上是整行，不会露出半截字（改这个值要同步改 ChatView 的 INPUT_MAX_HEIGHT） */
+  max-height: 142px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--fg);
+  padding: 10px 12px;
+  outline: none;
+  resize: none;
+  line-height: 1.5;
+}
+
+.chat-input textarea:focus {
+  border-color: var(--accent);
+}
+
+/* 输入框左边的助理按钮：和发送按钮一样大的方块，里面只放一个字 */
+/* 2026-11-01 第五轮：方块 + 首字（对 / 写 / 心）换成「名字 + 下拉箭头」的胶囊 */
+.preset-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 44.5px;
+  padding: 0 8px 0 11px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.preset-btn .preset-chev {
+  display: inline-flex;
+  color: var(--muted);
+  /* chevron 本身朝右，转 90° 变成「下拉」 */
+  transform: rotate(90deg);
+}
+
+.preset-btn:active {
+  border-color: var(--accent);
+}
+
+/* 换助理的底部弹层 */
+.preset-sheet {
+  padding: 16px 18px calc(16px + env(safe-area-inset-bottom));
+  background: var(--surface);
+}
+
+.preset-sheet-head {
+  font-size: 15px;
+  font-weight: 600;
+  padding-bottom: 8px;
+}
+
+.preset-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 2px;
+  border: none;
+  border-top: 1px solid var(--line);
+  background: none;
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 14.5px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.preset-option.on {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* 2026-11-01：发送/停止按钮做成和输入框一样高的方块（44×44），别再是一高一矮 */
+.chat-input .btn {
+  flex: none;
+  width: 44px;
+  /* 44.5 = 输入框的实际高度（边框 2 + 内边距 20 + 行高 22.5），差 0.5 也对齐 */
+  height: 44.5px;
+  padding: 0;
+  border-radius: 12px;
+}
+
+/* ===== 设置页 ===== */
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 2px;
+  border-bottom: 1px solid var(--line);
+}
+
+.setting-row:last-child {
+  border-bottom: none;
+}
+
+.setting-row .k {
+  font-size: 14.5px;
+  flex: none;
+  white-space: nowrap;
+}
+
+/* 右边的说明只占一行：太长就省略，不把左边的标题挤成两行 */
+.setting-row .v {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: right;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prompt-preview {
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.65;
+  background: color-mix(in srgb, var(--fg) 4%, var(--surface));
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  max-height: 340px;
+  overflow: auto;
+}
+
+.var-unknown {
+  color: var(--danger);
+}
+
+.budget-warn {
+  color: var(--warn);
+}
+
+/* ===== 密码库 ===== */
+
+.vault-gate {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 28px 4px;
+}
+
+/* 条目（2026-11-02）：没有钥匙图标，也不要右边那一列按钮。
+   三行：名称 / 账号 / 密码；账号和密码点一下复制，点别处进编辑。 */
+.vault-row {
+  /* .list-item 默认 12px + 居中；这里压到 9px，三行才不至于显空。
+     左右也留 9px（原来只有 2px）：条目文字到左边的距离 = 到条目上/下边的距离。
+     卡片自己还有 14px 内边距，所以文字离卡片边框是 14 + 9 = 23px，上方同样是 14 + 9 = 23px。 */
+  align-items: center;
+  gap: 6px;
+  padding: 9px;
+}
+
+.vault-main {
+  min-width: 0;
+}
+
+.vault-site {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  font-size: 14.5px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+/* 名称太长要省略，flex 子项得允许被压 */
+.vault-site > .ellipsis {
+  min-width: 0;
+}
+
+/* 右侧那颗箭头：做成 44×44 的触摸区（原来是个 14px 的 span，基本点不中）。
+   margin-right 抵消条目的 9px 内边距，箭头看起来还是贴着右边。 */
+.vault-arrow {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -9px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.vault-arrow:active {
+  color: var(--accent);
+}
+
+/* 解不开的条目（不是当前主密码加密的）：名称灰掉，别当成正常条目 */
+.vault-broken {
+  color: var(--muted);
+}
+
+/* 有备注：名称后面挂一个小文件图标（备注正文只在编辑里看） */
+.vault-note {
+  flex: none;
+  display: inline-flex;
+  color: var(--muted);
+  opacity: 0.75;
+}
+
+.vault-field {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+}
+
+.vault-site + .vault-field {
+  margin-top: 3px;
+}
+
+.vault-field + .vault-field {
+  margin-top: 1px;
+}
+
+.vault-k {
+  flex: none;
+  width: 26px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.vault-v {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  color: var(--fg);
+}
+
+/* 点下去给个反馈：这一行是「复制」而不是「进编辑」 */
+.vault-field:active .vault-v {
+  color: var(--accent);
+}
+
+/* 批量添加：粘贴后先给个预览，确认没问题再导入 */
+.batch-preview {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.batch-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 13px;
+}
+
+.batch-row + .batch-row {
+  border-top: 1px dashed color-mix(in srgb, var(--line) 70%, transparent);
+}
+
+@media (max-width: 380px) {
+  .home-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  /* 一列的卡片压矮一点，四张卡 + 问候语 + 今天第一项能一屏放下 */
+  .home-card {
+    min-height: 72px;
+    padding: 10px 14px;
+  }
+
+  .home-card .label {
+    margin-top: 7px;
+    font-size: 14.5px;
+  }
+}
+
+/* ===== 全局确认框：和 App 的卡片 / 按钮对齐（2026-11-01） =====
+   默认是 Vant 的原样：白底 + 蓝色文字按钮 + 上下细线，和这里的绿色、圆角、胶囊按钮都不搭。
+   现在统一成：卡片 + 标题 + 灰色正文 + 底部并排两颗按钮（左取消 / 右确认）。 */
+
+.van-dialog {
+  width: 320px;
+  max-width: 86vw;
+  border-radius: 14px;
+  background: var(--surface);
+  overflow: hidden;
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.2);
+}
+
+.van-dialog__header {
+  padding: 20px 20px 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--fg);
+}
+
+.van-dialog__content {
+  padding: 0;
+}
+
+.van-dialog__message {
+  padding: 8px 20px 18px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--muted);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 46vh;
+  overflow-y: auto;
+}
+
+.van-dialog__message--has-title {
+  padding-top: 8px;
+}
+
+/* 底部：不再是一条线分两半，改成并排两颗按钮 */
+.van-dialog__footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 16px;
+  border: none;
+}
+
+.van-dialog__footer::after,
+.van-dialog__confirm.van-hairline--left::after {
+  display: none;
+}
+
+.van-dialog__cancel,
+.van-dialog__confirm {
+  flex: 1;
+  height: 40px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.van-dialog__cancel {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.van-dialog__confirm {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.van-dialog__cancel::after,
+.van-dialog__confirm::after {
+  display: none;
+}
+
+/* 删除类：确认键用红色，别让「删除」和「执行」长得一样 */
+.van-dialog.is-danger .van-dialog__confirm {
+  border-color: var(--danger);
+  background: var(--danger);
+}
+
+/* 长内容的确认（工具调用）正文左对齐时留白一致 */
+.van-dialog__message--left {
+  text-align: left;
+}
