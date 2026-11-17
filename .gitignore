@@ -38,3 +38,6 @@ android/local.properties
 *.keystore
 keystore.properties
 *.apk
+
+# 本地工具运行目录（任务日志 / 锁文件）
+.dsh-ops/
