@@ -8,6 +8,7 @@ import { initDb } from './core/db'
 import { loadIconStyle } from './ui/iconStyle'
 import { autoSyncHolidaysIfStale, loadCachedHolidays } from './features/schedule/holidaySync'
 import { installEventReminders } from './features/schedule/reminders'
+import { installWidgetSync } from './core/widgetSync'
 /* 顺序不能反：theme.css 要在 vant 之后，否则 .van-dialog 这类覆盖会被 Vant 的默认样式压住 */
 import './ui/vant'
 import './ui/theme.css'
@@ -26,6 +27,9 @@ async function bootstrap() {
   // 日程提醒：挂 events 表钩子，界面/模型/导入改过的都会重排（提前 5 分钟）
   installEventReminders()
   createApp(App).use(router).mount('#app')
+
+  // 桌面小工具：数据一变就推一份快照给原生，点了哪条再跳回对应页面
+  installWidgetSync(router)
 
   // 节假日每月自动更新一次：后台跑，失败了也不影响启动
   void autoSyncHolidaysIfStale()

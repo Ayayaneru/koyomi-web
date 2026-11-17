@@ -24,6 +24,19 @@
 
         </activity>
 
+        <!-- 桌面小工具（2026-11-15）：高 1 格、宽 2 格 -->
+        <receiver
+            android:name=".KoyomiWidgetProvider"
+            android:exported="false"
+            android:label="@string/widget_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/koyomi_widget_info" />
+        </receiver>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

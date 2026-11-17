@@ -4,4 +4,6 @@
     <string name="title_activity_main">Koyomi</string>
     <string name="package_name">com.koyomi.app</string>
     <string name="custom_url_scheme">com.koyomi.app</string>
+    <string name="widget_name">日程</string>
+    <string name="widget_empty">最近没有安排</string>
 </resources>

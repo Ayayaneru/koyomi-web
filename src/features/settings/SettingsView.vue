@@ -7,6 +7,8 @@ import AppHeader from '../../ui/AppHeader.vue'
 import AppIcon from '../../ui/AppIcon.vue'
 import { iconStyle, setIconStyle, type IconStyle } from '../../ui/iconStyle'
 import { getConfig, patchConfig } from '../../core/db'
+import { WIDGET_DEFAULT_COUNT, WIDGET_DEFAULT_DAYS } from '../../core/widget'
+import { pushWidgetSnapshot } from '../../core/widgetSync'
 import { fmtDate } from '../../core/time'
 import { modules } from '../../core/container'
 import { DEFAULT_FESTIVALS, FESTIVAL_GROUPS, FESTIVALS, type FestivalGroup } from '../schedule/festivals'
@@ -30,12 +32,21 @@ const enabled = ref<string[]>([])
 const festivals = ref<string[]>([...DEFAULT_FESTIVALS])
 /** 周表 / 月表从哪天开头：0 = 周日，1 = 周一（2026-11-15 用户要求：两个表分开设） */
 const calendar = ref<{ weekStart: 0 | 1; monthStart: 0 | 1 }>({ weekStart: 0, monthStart: 0 })
+/** 桌面小工具：最近几天、显示几条（2026-11-15） */
+const widget = ref<{ days: number; count: number }>({
+  days: WIDGET_DEFAULT_DAYS,
+  count: WIDGET_DEFAULT_COUNT
+})
+const WIDGET_DAYS = [3, 7, 14]
+const WIDGET_COUNTS = [1, 2]
 const includeKey = ref(true)
 const busy = ref(false)
 const persistState = ref<'unknown' | 'yes' | 'no'>('unknown')
 const inWechat = /MicroMessenger/i.test(navigator.userAgent)
 /** 装成 APK 之后，界面上不该再出现「网页 / 浏览器 / 套壳」这些词 */
 const isApp = Capacitor.isNativePlatform()
+/** 小工具只做了安卓；iOS 和浏览器里这一块整段不出现 */
+const isAndroid = isApp && Capacitor.getPlatform() === 'android'
 /** 版本号来自 package.json（vite define 注入），别在这里手写 */
 const appVersion = __APP_VERSION__
 const nameVar = '{{user_name}}'
@@ -47,6 +58,10 @@ const pendingPayload = shallowRef<unknown>(null)
 
 onMounted(async () => {
   const cfg = await getConfig()
+widget.value = {
+  days: cfg.prefs.widget?.days ?? WIDGET_DEFAULT_DAYS,
+  count: cfg.prefs.widget?.count ?? WIDGET_DEFAULT_COUNT
+}
   userName.value = cfg.prefs.userName
   enabled.value = [...cfg.prefs.modules]
   festivals.value = [...(cfg.prefs.festivals ?? DEFAULT_FESTIVALS)]
@@ -82,6 +97,20 @@ async function setCalendarStart(key: 'weekStart' | 'monthStart', value: 0 | 1) {
   await patchConfig({ prefs: { calendar: { ...calendar.value } } })
   const day = value === 1 ? '周一' : '周日'
   showToast(`${key === 'weekStart' ? '周表' : '月表'}已改成${day}开头`)
+}
+
+/** 小工具的两组 chips：改完立刻重推快照，不用等下次打开 App */
+async function setWidgetPref(key: 'days' | 'count', value: number) {
+  if (widget.value[key] === value) return
+  widget.value = { ...widget.value, [key]: value }
+  await patchConfig({ prefs: { widget: { ...widget.value } } })
+  await pushWidgetSnapshot()
+  showToast(key === 'days' ? `小工具看最近 ${value} 天` : `小工具显示 ${value} 条`)
+}
+
+async function refreshWidget() {
+  await pushWidgetSnapshot()
+  showToast('已刷新桌面小工具')
 }
 
 function festivalsOf(group: FestivalGroup) {
@@ -325,6 +354,40 @@ onMounted(async () => {
           只影响月历上的小字。法定节假日（元旦 / 春节 / 清明 / 劳动节 / 端午 / 中秋 / 国庆）一直显示，不用选。
         </div>
       </div>
+
+      <template v-if="isAndroid">
+        <div class="section-title">桌面小工具</div>
+        <div class="card">
+          <div class="small">看最近几天</div>
+          <div class="chips" style="margin-top: 8px">
+            <button
+              v-for="d in WIDGET_DAYS"
+              :key="d"
+              class="chip"
+              :class="{ on: widget.days === d }"
+              @click="setWidgetPref('days', d)"
+            >
+              {{ d }} 天
+            </button>
+          </div>
+          <div class="tiny muted" style="margin: 10px 0 8px">显示几条</div>
+          <div class="chips">
+            <button
+              v-for="c in WIDGET_COUNTS"
+              :key="c"
+              class="chip"
+              :class="{ on: widget.count === c }"
+              @click="setWidgetPref('count', c)"
+            >
+              {{ c }} 条
+            </button>
+          </div>
+          <div class="tiny muted" style="margin-top: 8px">
+            逾期还没做的任务一直排在最前面。小工具只有一格高，最多放两行，所以只有 1 条 / 2 条可选。
+          </div>
+          <button class="btn btn-block btn-sm" style="margin-top: 10px" @click="refreshWidget">立即刷新小工具</button>
+        </div>
+      </template>
 
       <div class="section-title">任务图标</div>
       <div class="card">

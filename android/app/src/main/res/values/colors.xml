@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 主题色：styles.xml 里的 AppTheme 一直在引用，之前缺这个文件，补上 -->
+    <color name="colorPrimary">#3F5F4F</color>
+    <color name="colorPrimaryDark">#2E463B</color>
+    <color name="colorAccent">#3F5F4F</color>
+
+    <!-- 桌面小工具：跟 App 的 theme.css 对齐（surface / line / fg / muted / danger） -->
+    <color name="widget_bg">#FFFFFF</color>
+    <color name="widget_line">#E6E3DE</color>
+    <color name="widget_title">#232323</color>
+    <color name="widget_muted">#8A877F</color>
+    <color name="widget_danger">#B4544D</color>
+</resources>

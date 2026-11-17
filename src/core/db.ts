@@ -294,6 +294,12 @@ export interface CalendarPrefs {
   monthStart?: 0 | 1
 }
 
+/** 桌面小工具：看最近几天、显示几条（不填 = 7 天 / 2 条） */
+export interface WidgetPrefs {
+  days?: number
+  count?: number
+}
+
 export interface ConfigRow {
   id: 'app'
   llm: LlmConfig
@@ -316,6 +322,8 @@ export interface ConfigRow {
     activePreset?: string
     /** 周表 / 月表从周几开头；不填=都从周日开始（保持旧行为） */
     calendar?: CalendarPrefs
+    /** 桌面小工具显示范围；不填=最近 7 天里的 2 条 */
+    widget?: WidgetPrefs
   }
   vaultSalt: string
   updatedAt: number

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 夜间：只覆盖小工具用到的颜色，主题色保持原样 -->
+    <color name="widget_bg">#171A20</color>
+    <color name="widget_line">#262A31</color>
+    <color name="widget_title">#E8E6E1</color>
+    <color name="widget_muted">#8A877F</color>
+    <color name="widget_danger">#D9736D</color>
+</resources>
