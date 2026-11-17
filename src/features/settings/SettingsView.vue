@@ -28,6 +28,8 @@ const router = useRouter()
 const userName = ref('')
 const enabled = ref<string[]>([])
 const festivals = ref<string[]>([...DEFAULT_FESTIVALS])
+/** 周表 / 月表从哪天开头：0 = 周日，1 = 周一（2026-11-15 用户要求：两个表分开设） */
+const calendar = ref<{ weekStart: 0 | 1; monthStart: 0 | 1 }>({ weekStart: 0, monthStart: 0 })
 const includeKey = ref(true)
 const busy = ref(false)
 const persistState = ref<'unknown' | 'yes' | 'no'>('unknown')
@@ -48,6 +50,10 @@ onMounted(async () => {
   userName.value = cfg.prefs.userName
   enabled.value = [...cfg.prefs.modules]
   festivals.value = [...(cfg.prefs.festivals ?? DEFAULT_FESTIVALS)]
+  calendar.value = {
+    weekStart: cfg.prefs.calendar?.weekStart ?? 0,
+    monthStart: cfg.prefs.calendar?.monthStart ?? 0
+  }
   try {
     persistState.value = (await navigator.storage?.persisted?.()) ? 'yes' : 'no'
   } catch {
@@ -67,6 +73,15 @@ async function saveName() {
   await patchConfig({
     prefs: { userName: userName.value.trim(), modules: enabled.value, festivals: festivals.value }
   })
+}
+
+/** 周表 / 月表的开头日：存进 prefs.calendar，日程页下次进来就按新的排 */
+async function setCalendarStart(key: 'weekStart' | 'monthStart', value: 0 | 1) {
+  if (calendar.value[key] === value) return
+  calendar.value = { ...calendar.value, [key]: value }
+  await patchConfig({ prefs: { calendar: { ...calendar.value } } })
+  const day = value === 1 ? '周一' : '周日'
+  showToast(`${key === 'weekStart' ? '周表' : '月表'}已改成${day}开头`)
 }
 
 function festivalsOf(group: FestivalGroup) {
@@ -107,6 +122,11 @@ async function useBuiltinHolidays() {
 const ICON_STYLES: { key: IconStyle; label: string }[] = [
   { key: 'color', label: '彩色' },
   { key: 'line', label: '线条' }
+]
+
+const WEEK_START_OPTIONS: { value: 0 | 1; label: string }[] = [
+  { value: 0, label: '周日开头' },
+  { value: 1, label: '周一开头' }
 ]
 
 async function switchIconStyle(next: IconStyle) {
@@ -233,6 +253,35 @@ onMounted(async () => {
 
       <div class="section-title">日历</div>
       <div class="card">
+        <div class="small">一周从哪天开始</div>
+        <div class="tiny muted" style="margin: 6px 0 8px">周表</div>
+        <div class="chips">
+          <button
+            v-for="opt in WEEK_START_OPTIONS"
+            :key="opt.value"
+            class="chip"
+            :class="{ on: calendar.weekStart === opt.value }"
+            @click="setCalendarStart('weekStart', opt.value)"
+          >
+            {{ opt.label }}
+          </button>
+        </div>
+        <div class="tiny muted" style="margin: 10px 0 8px">月表</div>
+        <div class="chips">
+          <button
+            v-for="opt in WEEK_START_OPTIONS"
+            :key="opt.value"
+            class="chip"
+            :class="{ on: calendar.monthStart === opt.value }"
+            @click="setCalendarStart('monthStart', opt.value)"
+          >
+            {{ opt.label }}
+          </button>
+        </div>
+        <div class="tiny muted" style="margin-top: 8px">
+          只改表头顺序和每月第一格从哪天排；单双周和 ISO 周数固定按周一算，不跟着变。
+        </div>
+        <div class="hr-soft" style="margin: 14px 0 12px"></div>
         <div class="row-between">
           <div class="grow">
             <div>节假日数据</div>

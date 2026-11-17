@@ -18,9 +18,12 @@ import {
   fmtDateTime,
   fmtTime,
   hourLabel,
+  mondayOf,
   monthCells,
-  sundayOf,
-  weekdayName
+  weekDayLabels,
+  weekStartOf,
+  weekdayName,
+  type WeekStart
 } from '../../core/time'
 import {
   agendaInRange,
@@ -49,8 +52,11 @@ const cursor = ref(dayStart(Date.now()))
 const HOUR_START = SLOT_START_HOUR
 const HOUR_COUNT = SLOT_COUNT * SLOT_HOURS
 const hours = Array.from({ length: SLOT_COUNT }, (_, i) => HOUR_START + i * SLOT_HOURS)
-/** 周视图从周日开始（用户要求），表头只留一个字 */
-const DOW = ['日', '一', '二', '三', '四', '五', '六']
+/** 周表 / 月表各自的起点：0 = 周日，1 = 周一，读设置里的 prefs.calendar */
+const weekStart = ref<WeekStart>(0)
+const monthStart = ref<WeekStart>(0)
+/** 表头只留一个字，顺序跟着周起始日走 */
+const DOW = computed(() => weekDayLabels(weekStart.value))
 const todayStart = dayStart(Date.now())
 
 /* 选中：哪一天 + 哪个小时；周视图默认落在「现在这个整点」 */
@@ -66,6 +72,8 @@ const enabledFestivals = ref<string[]>([...DEFAULT_FESTIVALS])
 onMounted(async () => {
   const cfg = await getConfig()
   enabledFestivals.value = [...(cfg.prefs.festivals ?? DEFAULT_FESTIVALS)]
+  weekStart.value = cfg.prefs.calendar?.weekStart ?? 0
+  monthStart.value = cfg.prefs.calendar?.monthStart ?? 0
 
   // 从首页的「日程」点进来（/schedule?at=…）：选中那一条的时段，而不是「现在」
   const at = Number(route.query.at)
@@ -104,10 +112,10 @@ function selectSlot(ts: number, hour: number) {
 
 const range = computed(() => {
   if (view.value === 'week') {
-    const start = sundayOf(cursor.value)
+    const start = weekStartOf(cursor.value, weekStart.value)
     return { start, end: addDays(start, 7) }
   }
-  const list = monthCells(cursor.value)
+  const list = monthCells(cursor.value, monthStart.value)
   return { start: list[0].ts, end: addDays(list[list.length - 1].ts, 1) }
 })
 
@@ -124,10 +132,10 @@ const agenda = computed<AgendaItem[]>(() =>
 const weekDays = computed(() => {
   holidayVersion.value // 联网更新后要重算
   return Array.from({ length: 7 }, (_, i) => {
-    const ts = addDays(sundayOf(cursor.value), i)
+    const ts = addDays(weekStartOf(cursor.value, weekStart.value), i)
     return {
       ts,
-      dow: DOW[i],
+      dow: DOW.value[i],
       day: new Date(ts).getDate(),
       holiday: holidayOf(ts),
       isToday: ts === todayStart,
@@ -246,7 +254,7 @@ const weekBlocks = computed<WeekBlock[]>(() => {
 
 const cells = computed(() => {
   holidayVersion.value // 联网更新后要重算
-  return monthCells(cursor.value).map(cell => {
+  return monthCells(cursor.value, monthStart.value).map(cell => {
     const holiday = holidayOf(cell.ts)
     const lunar = lunarOf(cell.ts)
     // 节日名优先级：法定节假日 > 自己勾选的节日 > 农历日
@@ -376,14 +384,14 @@ function isoWeek(ts: number): number {
 
 const headTitle = computed(() => {
   if (view.value === 'week') {
-    const start = sundayOf(cursor.value)
+    const start = weekStartOf(cursor.value, weekStart.value)
     const end = addDays(start, 6)
     const md = (ts: number) => {
       const d = new Date(ts)
       return `${d.getMonth() + 1}月${d.getDate()}日`
     }
     // 跨年那一周也不写年份（2026-11-02 用户要求）：12月27日 – 1月2日
-    return `${md(start)} – ${md(end)} · 第 ${isoWeek(addDays(start, 3))} 周`
+    return `${md(start)} – ${md(end)} · 第 ${isoWeek(addDays(mondayOf(start), 3))} 周`
   }
   const d = new Date(cursor.value)
   return `${d.getFullYear()} 年 ${d.getMonth() + 1} 月`
@@ -392,7 +400,7 @@ const headTitle = computed(() => {
 /** 当前视野的范围（月视图按整月算，不算月历里那些前后月份的格子） */
 function visibleRange(): { start: number; end: number } {
   if (view.value === 'week') {
-    const start = sundayOf(cursor.value)
+    const start = weekStartOf(cursor.value, weekStart.value)
     return { start, end: addDays(start, 7) }
   }
   const d = new Date(cursor.value)
@@ -641,7 +649,7 @@ async function removeCurrent() {
       <!-- 月视图 -->
       <template v-else>
         <div class="month-grid">
-          <div v-for="d in ['日', '一', '二', '三', '四', '五', '六']" :key="d" class="month-head">{{ d }}</div>
+          <div v-for="d in DOW" :key="d" class="month-head">{{ d }}</div>
           <div
             v-for="cell in cells"
             :key="cell.ts"

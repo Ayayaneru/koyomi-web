@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { clearLunarCache, lunarLabel, lunarOf } from '../core/lunar'
-import { addDays, dayStart, fmtDate, monthCells, sundayOf } from '../core/time'
+import { addDays, dayStart, fmtDate, monthCells, sundayOf, weekDayLabels, weekStartOf } from '../core/time'
 import { solarTermOf } from '../core/solarTerms'
 import {
   applyRemoteYear,
@@ -160,6 +160,31 @@ describe('周日开头（2026-11-01 改）', () => {
     const cells = monthCells(new Date('2026-11-15T00:00:00').getTime())
     expect(new Date(cells[0].ts).getDay()).toBe(0)
     expect(cells).toHaveLength(42)
+  })
+})
+
+describe('周表 / 月表可以分开设从哪天开始（2026-11-15）', () => {
+  it('weekStartOf 默认还是周日，传 1 就归到周一', () => {
+    const thursday = new Date('2026-11-05T12:00:00').getTime()
+    expect(new Date(weekStartOf(thursday)).getDate()).toBe(1)
+    expect(new Date(weekStartOf(thursday, 1)).getDate()).toBe(2)
+    // 周一自己还是自己
+    expect(new Date(weekStartOf(new Date('2026-11-02T08:00:00').getTime(), 1)).getDate()).toBe(2)
+  })
+
+  it('表头顺序跟着起始日走', () => {
+    expect(weekDayLabels()).toEqual(['日', '一', '二', '三', '四', '五', '六'])
+    expect(weekDayLabels(1)).toEqual(['一', '二', '三', '四', '五', '六', '日'])
+  })
+
+  it('monthCells 第二参数换成年历起点，42 格不变', () => {
+    const sundayFirst = monthCells(new Date('2026-11-15T00:00:00').getTime())
+    const mondayFirst = monthCells(new Date('2026-11-15T00:00:00').getTime(), 1)
+    expect(new Date(mondayFirst[0].ts).getDay()).toBe(1)
+    // 2026-11-01 是周日，改从周一起排之后第一格是 10/26
+    expect(new Date(mondayFirst[0].ts).getMonth()).toBe(9)
+    expect(mondayFirst).toHaveLength(42)
+    expect(new Date(sundayFirst[0].ts).getDay()).toBe(0)
   })
 })
 

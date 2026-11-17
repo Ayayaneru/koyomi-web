@@ -51,20 +51,31 @@ export function addMonths(ts: number, n: number): number {
   return d.getTime()
 }
 
-/** 所在周的周一 00:00（单双周判断的基准，不用 ISO 周数） */
-/** 一周从周日开始：2026-11-01（周日）→ 那天 0 点 */
-export function sundayOf(ts: number): number {
+/** 一周从周几开始：0 = 周日，1 = 周一（2026-11-15：周表、月表可以各选各的） */
+export type WeekStart = 0 | 1
+
+/** 所在周的起点 00:00，按传入的周起始日算 */
+export function weekStartOf(ts: number, start: WeekStart = 0): number {
   const d = new Date(dayStart(ts))
-  d.setDate(d.getDate() - d.getDay())
+  const back = (d.getDay() - start + 7) % 7
+  d.setDate(d.getDate() - back)
   return d.getTime()
 }
 
+/** 所在周的周日 00:00（默认的周表起点） */
+export function sundayOf(ts: number): number {
+  return weekStartOf(ts, 0)
+}
+
+/** 所在周的周一 00:00（单双周判断的基准，不用 ISO 周数；不跟显示设置走） */
 export function mondayOf(ts: number): number {
-  const d = new Date(dayStart(ts))
-  const wd = d.getDay() // 0 = 周日
-  const back = wd === 0 ? 6 : wd - 1
-  d.setDate(d.getDate() - back)
-  return d.getTime()
+  return weekStartOf(ts, 1)
+}
+
+/** 表头那 7 个字，从传入的周起始日排起：周日开头 → 日一二三四五六 */
+export function weekDayLabels(start: WeekStart = 0): string[] {
+  const base = ['日', '一', '二', '三', '四', '五', '六']
+  return Array.from({ length: 7 }, (_, i) => base[(start + i) % 7])
 }
 
 /** 两个时间点相隔几个「自然日」，只比日期部分 */
@@ -98,14 +109,13 @@ export function fromInputDate(value: string): number {
   return parseLocal(value)
 }
 
-/** 42 格月历（从周一开始） */
-export function monthCells(ts: number): { ts: number; inMonth: boolean }[] {
+/** 42 格月历，从周起始日排起（默认周日，可传 1 换成周一） */
+export function monthCells(ts: number, start: WeekStart = 0): { ts: number; inMonth: boolean }[] {
   const d = new Date(ts)
   const first = new Date(d.getFullYear(), d.getMonth(), 1).getTime()
-  // 2026-11-01：月历改成周日开头（表头顺序跟着变），和周日开始的周视图对齐
-  const start = sundayOf(first)
+  const gridStart = weekStartOf(first, start)
   return Array.from({ length: 42 }, (_, i) => {
-    const cur = addDays(start, i)
+    const cur = addDays(gridStart, i)
     return { ts: cur, inMonth: new Date(cur).getMonth() === d.getMonth() }
   })
 }

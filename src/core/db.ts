@@ -288,6 +288,12 @@ export const DEFAULT_DIARY_TAGS: DiaryTag[] = [
   { name: '杂事', color: '#6b6862' }
 ]
 
+/** 日历显示：周表 / 月表各自的周起始日（0 = 周日，1 = 周一） */
+export interface CalendarPrefs {
+  weekStart?: 0 | 1
+  monthStart?: 0 | 1
+}
+
 export interface ConfigRow {
   id: 'app'
   llm: LlmConfig
@@ -308,6 +314,8 @@ export interface ConfigRow {
     presets?: Preset[]
     /** 当前用哪个预设；不填=chat */
     activePreset?: string
+    /** 周表 / 月表从周几开头；不填=都从周日开始（保持旧行为） */
+    calendar?: CalendarPrefs
   }
   vaultSalt: string
   updatedAt: number
@@ -339,7 +347,9 @@ export function defaultConfig(): ConfigRow {
     },
     prefs: {
       userName: '',
-      modules: ['llm', 'schedule', 'task', 'vault']
+      modules: ['llm', 'schedule', 'task', 'vault'],
+      // 2026-11-15：默认仍是周日开头（用户要求保持现状），要周一开始去设置里改
+      calendar: { weekStart: 0, monthStart: 0 }
     },
     vaultSalt: '',
     updatedAt: Date.now()
