@@ -1,7 +1,4 @@
-<svg id="emoji" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
-  <g id="line">
-    <path fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m24,47.4166c-3.6825-3.2959-6-8.0856-6-13.4166h36c0,5.331-2.3175,10.1207-6,13.4166"/>
-    <path fill="none" stroke="#000" stroke-linecap="round" stroke-width="2" d="m51,45h4.5c3.0376,0,5.5-2.4624,5.5-5.5s-2.4624-5.5-5.5-5.5h-2.5"/>
-    <path fill="none" stroke="#000" stroke-miterlimit="10" stroke-width="2" d="m16.5086,49.9385h41.8588c.69,0,1.0356.8343.5477,1.3222l-3.4059,3.1559c-.3985.3985-.9389.6223-1.5025.6223H20.73c-.661,0-1.2877-.2941-1.7102-.8025l-2.9687-3.3231c-.322-.3875-.0464-.9748.4574-.9748Z"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><style>.ink{stroke:#000000;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}.line{fill:none;stroke:#000000;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}.leaf,.mint,.sage,.cream,.peach,.blue,.paper,.inkfill,.soft{fill:none}</style><g transform="translate(-4.5000 -2.5000) scale(1.000000)"><path class="ink cream" d="M17 25h29v22a12 12 0 0 1-12 12h-5a12 12 0 0 1-12-12z" />
+    <path class="line" d="M46 31h5a7 7 0 0 1 0 14h-5M15 59h34" />
+    <path class="line" d="M24 19q-4-5 0-9m10 9q-4-5 0-9m9 9q-4-5 0-9" />
+  </g></svg>

@@ -1,8 +1,3 @@
-<svg id="emoji" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
-  <g id="line">
-    <polyline fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" points="36,63.1661 36,51.1661 31,29.1661"/>
-    <line x1="36" x2="41" y1="51.1661" y2="41.1661" fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-    <path fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22.3618,19.992 c4.067,1.3991,6.0978,6.2158,6.0978,6.2158s-4.5639,2.5478-8.6315,1.149s-6.0978-6.2158-6.0978-6.2158 S18.2963,18.5952,22.3618,19.992z"/>
-    <path fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M51.935,35.8718 c4.1996,0.9278,6.7648,5.4824,6.7648,5.4824s-4.2448,3.05-8.4449,2.1226s-6.7648-5.4824-6.7648-5.4824 S47.7371,34.9462,51.935,35.8718z"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><style>.ink{stroke:#000000;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}.line{fill:none;stroke:#000000;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}.leaf,.mint,.sage,.cream,.peach,.blue,.paper,.inkfill,.soft{fill:none}</style><g transform="translate(-1.0000 -5.5000) scale(1.000000)"><path class="line" d="M32 51V27m0 11C25 29 18 28 14 30c2 9 8 13 18 12m0-8c4-13 12-18 20-17 0 10-7 17-20 19" />
+    <path class="ink cream" d="M19 51h26l-3 7H22z" /><path class="line" d="M24 52v4m8-4v4m8-4v4" />
+  </g></svg>

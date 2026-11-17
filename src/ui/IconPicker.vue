@@ -13,7 +13,7 @@ const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
 const PRESETS = [
   '🐟', '🌱', '💧', '🪴', '☀️', '🌙', '💊', '🦷',
   '🧺', '🧹', '🚿', '🍚', '📚', '🏃', '💤', '🐱',
-  '🚲', '📦', '💡', '🗑️', '☕', '🚰', '🛒', '🐕', '💸'
+  '🚲', '📦', '💡', '🗑️', '☕', '🚰', '🛒', '🍳', '💸'
 ]
 
 const STYLES: { key: IconStyle; label: string }[] = [

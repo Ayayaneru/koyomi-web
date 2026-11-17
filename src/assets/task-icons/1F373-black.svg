@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><style>.ink{stroke:#000000;stroke-width:3.6111;stroke-linecap:round;stroke-linejoin:round}.line{fill:none;stroke:#000000;stroke-width:3.6111;stroke-linecap:round;stroke-linejoin:round}.leaf,.mint,.sage,.cream,.peach,.blue,.paper,.inkfill,.soft{fill:none}</style><g transform="translate(-11.2000 -4.7200) scale(0.720000)"><path class="line" d="M40 37q-5-6 0-11m15 11q-5-6 0-11m15 11q-5-6 0-11" />
+  <path class="ink sage" d="M33 48h47l-5 28H38z" />
+  <path class="line" d="M29 46h55m-25-4v-5h14v5m7 13h11v11H78" />
+  <path class="ink peach" d="M44 54h27v8H44z" />
+</g></svg>
