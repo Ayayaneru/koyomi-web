@@ -12,8 +12,12 @@ import { buildPrompt, presetList, type BuiltPrompt } from './prompt'
  */
 
 const BUILTIN = ['chat', 'write', 'mind']
-/** 模块 chips 只列日程和任务：日记单独用开关管（它是一整块权限，不是「能力」之一） */
-const BUSINESS_MODULES: Record<string, string> = { schedule: '日程', task: '任务' }
+/** 「能用哪些」的 chips：日程 / 任务 / 日记并排；日记仍存在 allowDiary 里（一整块权限，存法没变） */
+const BUSINESS_MODULES: { id: string; label: string }[] = [
+  { id: 'schedule', label: '日程' },
+  { id: 'task', label: '任务' },
+  { id: 'vault', label: '日记' }
+]
 
 const loaded = ref(false)
 const presets = ref<Preset[]>([])
@@ -106,6 +110,19 @@ function toggleModule(id: string) {
   moduleIds.value = moduleIds.value.includes(id)
     ? moduleIds.value.filter(item => item !== id)
     : [...moduleIds.value, id]
+}
+
+/** 日记 chip 走 allowDiary，日程 / 任务走 modules */
+function chipOn(id: string): boolean {
+  return id === 'vault' ? allowDiary.value : moduleIds.value.includes(id)
+}
+
+function toggleChip(id: string): void {
+  if (id === 'vault') {
+    allowDiary.value = !allowDiary.value
+    return
+  }
+  toggleModule(id)
 }
 
 function addPreset() {
@@ -264,32 +281,23 @@ const budget = computed(() => {
       <div class="card">
         <div class="chips">
           <button
-            v-for="(label, id) in BUSINESS_MODULES"
-            :key="id"
+            v-for="m in BUSINESS_MODULES"
+            :key="m.id"
             class="chip"
-            :class="{ on: moduleIds.includes(id) }"
-            @click="toggleModule(id)"
+            :class="{ on: chipOn(m.id) }"
+            @click="toggleChip(m.id)"
           >
-            {{ label }}
+            {{ m.label }}
           </button>
         </div>
         <div class="tiny muted" style="margin-top: 8px">
           勾上哪个模块，它的工具就给它用，模块自带的行为规则也会一起拼进去。<br />
-          没勾的模块（以及下面关着的日记），这个助理既看不到也改不了。
+          没勾的模块，这个助理既看不到也改不了。日记还要求「设置 → 模块开关」里的日记开着。
         </div>
       </div>
 
       <div class="section-title">模型能动哪些</div>
       <div class="card">
-        <div class="switch-row">
-          <div class="grow">
-            <div>用日记</div>
-            <div class="tiny muted">关着就看不到、也写不了日记</div>
-          </div>
-          <button class="switch-dot" :class="{ on: allowDiary }" @click="allowDiary = !allowDiary">
-            ✓
-          </button>
-        </div>
         <div class="switch-row">
           <div class="grow">
             <div>改人格</div>
@@ -330,7 +338,8 @@ const budget = computed(() => {
           </button>
         </div>
         <div class="tiny muted" style="margin-top: 8px">
-          开了之后它才有对应的工具，每次改动都会弹确认框，框里显示「改前 / 改后」。
+          开了之后它才有对应的工具，每次改动都会弹确认框，框里显示「改前 / 改后」。<br />
+          日记不在这里，已经和日程 / 任务一起放进上面的「能用哪些」。
         </div>
       </div>
 

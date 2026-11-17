@@ -24,7 +24,13 @@ beforeEach(async () => {
 describe('Tool 注册表', () => {
   it('密码库没有注册任何工具（架构隔离，不是运行时开关）', () => {
     const vaultTools = allTools.filter(tool => tool.moduleId === 'vault').map(tool => tool.name)
-    expect(vaultTools).toEqual(['vault_write_diary', 'vault_search_diary'])
+    expect(vaultTools).toEqual([
+      'vault_write_diary',
+      'vault_search_diary',
+      'vault_read_diary',
+      'vault_update_diary',
+      'vault_delete_diary'
+    ])
   })
 
   it('工具名符合 OpenAI 规则', () => {
