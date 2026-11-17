@@ -24,8 +24,8 @@
 
 - 只做 OpenAI 兼容协议（`POST /chat/completions`），SSE 流式输出，支持 function calling。
 - 一条回复里有多处改动时，确认框会**合并成一次**，而不是连弹三个。
-- 工具覆盖：日程增删改查、任务增删改查与完成、日记读写、以及（按预设开放的）记忆/人格自改。
-- 三个内置预设：**对话 / 写作 / 心理**。每个预设各自带人格、可用模块、上下文模板和自改权限。
+- 工具覆盖：日程增删改查、任务增删改查与完成、日记读写改删、以及（按预设开放的）记忆/人格自改。
+- 三个内置预设：**对话 / 写作 / 心理**。每个预设各自带人格、可用模块（日程 / 任务 / 日记）、上下文模板和自改权限。
 - 上下文模板支持 7 个变量：`{{today}}` `{{now}}` `{{weekday}}` `{{upcoming_events}}` `{{tasks_due}}` `{{diary_titles}}` `{{user_name}}`。
 - 历史会话存在本地，可以回看。
 - 输入框随内容长高（最多五行左右，再多就在框里滚动）；聊天气泡里的文字可以长按选中、复制。
@@ -35,16 +35,18 @@
 - 周视图按小时排，月视图带农历、节气、法定节假日与调休。
 - 节假日内置 2026 年数据；也可以在月历上点「更新」联网拉取（数据来自 [holiday-cn](https://github.com/NateScarlet/holiday-cn)），不自动联网。
 - 重复规则：不重复 / 每天 / 每周（支持单双周）/ 每 N 天，可设截止日期。
+- 周视图和月视图可以分别设成周日或周一开始（默认周日；单双周和标题里的 ISO 周数固定按周一算）。
 - 周视图点表头选天、点时间格选小时；底部固定一块当日面板，点条目才进编辑。
 - 每条日程在开始前 **5 分钟**弹一次通知栏提醒（仅 App；重复日程按未来 30 天展开，每次打开重排）。
 - **日程表识图导入**：拍照或选图 → 视觉模型转成 JSON → 预览确认 → 入库。识别失败会自动重问一次，仍失败可以重试。
+- **桌面小工具**（仅 Android App）：1×2、一格高，显示最近几天里的几条日程 / 任务，逾期任务常驻；设置里可选 3 / 7 / 14 天、1 / 2 条，点条目直接跳到对应页面。
 
 ### 任务
 
 - 三种形态：一次性 / 每 N 天 / 限次（做够次数自动结束）。
 - 完成一次记一条记录，可以撤销（连同到期日一起退回）。
 - 首页把逾期任务并进「待办」，不会悄悄消失。
-- 图标可选，内置 OpenMoji 的彩色与线条两套画法。
+- 图标可选，内置 25 个手绘风插画图标，彩色与线条两套画法；1.0.2 起「烹饪」替代「遛狗」。
 
 ### 日记
 
@@ -78,7 +80,7 @@ npm run dev        # http://localhost:5173
 | `npm run dev`       | 开发服务器（含模型代理）       |
 | `npm run build`     | 类型检查 + 构建到 `dist/` |
 | `npm run preview`   | 预览构建产物             |
-| `npm test`          | 单元测试（vitest，193 条） |
+| `npm test`          | 单元测试（vitest，203 条） |
 | `npm run typecheck` | 只做 `vue-tsc` 类型检查  |
 
 首次打开是空库，直接进「日程」或「任务」新建就行。
@@ -118,11 +120,20 @@ cd android
 
 产物在 `android/app/build/outputs/apk/debug/app-debug.apk`。
 
+发版打 release 包：
+
+```bash
+cd android
+./gradlew assembleRelease       # Windows: gradlew.bat assembleRelease
+```
+
+签名配置放在 `android/keystore.properties`（和 keystore 一起都已被 `.gitignore` 忽略，不要提交）；产物在 `android/app/build/outputs/apk/release/`。版本号两处一起改：`package.json` 的 `version` 和 `android/app/build.gradle` 的 `versionName` / `versionCode`，打好的包发在 GitHub Releases。
+
 ## 技术栈
 
 - **Vue 3 + TypeScript + Vite 8**，路由用 hash 模式（WebView 里没有 HTTP 服务器，history 模式刷新会 404）
 - **Dexie 4**（IndexedDB），表结构只增不改，迁移按版本号叠加
-- **Capacitor 8**：本地通知、文件保存、分享、原生 HTTP
+- **Capacitor 8**：本地通知、文件保存、分享、原生 HTTP、桌面小工具（自定义插件）
 - **Vant 4**：只用了少数几个组件，样式以手写 `src/ui/theme.css` 为主
 - **markdown-it + DOMPurify**：模型回复先消毒再渲染
 - **Vitest**：纯函数与数据层优先覆盖
@@ -139,6 +150,8 @@ koyomi-web/
 │  │  ├─ crypto.ts       # PBKDF2 + AES-GCM
 │  │  ├─ timeline.ts     # 事件 / 任务 / 日记合成一条时间轴
 │  │  ├─ lunar.ts        # 农历与节气（Intl，无第三方依赖）
+│  │  ├─ widget.ts       # 桌面小工具快照（最近 N 天里的 M 条）
+│  │  ├─ widgetSync.ts   # 小工具原生桥与数据变更推送
 │  │  └─ notify.ts       # 本地通知（仅 App，网页端是空函数）
 │  ├─ features/
 │  │  ├─ llm/            # 对话界面、模型设置、prompt、工具调用循环
@@ -180,6 +193,7 @@ export interface FeatureModule {
 
 - 库名 `koyomi`，8 张表：`events` `tasks` `taskLogs` `diary` `config` `vaultEntries` `holidayCache` `chatSessions`。
 - 没有同步服务。浏览器和 App 是**两个互不相干的库**（origin 不同），换设备靠备份文件。
+- 桌面小工具的快照（标题、时间、跳转路径）只写进本机 SharedPreferences，不上传。
 - API Key 存在本地 `config` 表里，明文（IndexedDB 本身不加密）。介意的话别在共用电脑上用。
 - 密码库的密文无法解开就没有数据，没有后门也没有找回流程。
 - 模型回复用 DOMPurify 过滤后才渲染，避免 markdown 里夹带脚本。
@@ -187,10 +201,10 @@ export interface FeatureModule {
 ## 测试
 
 ```bash
-npm test        # 15 个文件 / 193 条，全绿
+npm test        # 17 个文件 / 203 条，全绿
 ```
 
-覆盖的重点是纯函数和数据层：重复规则展开、到期与逾期判断、时间轴合并、农历与节假日、prompt 变量渲染、SSE 流式回落、加密与备份迁移、识图 JSON 容错。
+覆盖的重点是纯函数和数据层：重复规则展开、到期与逾期判断、周起始日与月历排布、时间轴合并、农历与节假日、prompt 变量渲染、SSE 流式回落、加密与备份迁移、识图 JSON 容错、日记工具与小工具快照。
 
 ## 已知限制
 
@@ -199,12 +213,14 @@ npm test        # 15 个文件 / 193 条，全绿
 3. **不自动同步**：没有账号体系，多设备靠导出/导入。
 4. **识图要人工过一遍**：模型会认错课程名或时间，导入前有预览页可改。
 5. **密码库没有找回**：主密码丢了就是丢了。
+6. **桌面小工具只有 Android**：iOS 和网页端没有对应实现，设置里也不会出现这一块。
 
 ## 资源与许可
 
 代码是 MIT（见 [LICENSE](LICENSE)），但下面这些资源各有各的许可：
 
-- **任务图标**（`src/assets/task-icons/`）：来自 [OpenMoji](https://openmoji.org/)，图形部分按 **CC BY-SA 4.0** 授权，不适用本项目的 MIT。
+- **任务图标**（`src/assets/task-icons/`）：本项目自绘，随代码按 MIT 授权（1.0.2 起）。
+  1.0.1 及更早版本用的是 [OpenMoji](https://openmoji.org/)，图形部分按 **CC BY-SA 4.0** 授权：
   > All emojis designed by OpenMoji – the open-source emoji and icon project. License: CC BY-SA 4.0
 - **节假日与调休**：内置的 2026 年数据依据国办发明电〔2025〕7 号；联网更新用 [holiday-cn](https://github.com/NateScarlet/holiday-cn)（MIT）。
 - **二十四节气表**：用 [lunar-javascript](https://github.com/6tail/lunar-javascript)（MIT）离线算好后写进代码，运行时不引依赖。
@@ -213,4 +229,4 @@ npm test        # 15 个文件 / 193 条，全绿
 
 ## 许可
 
-代码以 [MIT](LICENSE) 授权（© 2026 Ayayaneru）；`src/assets/task-icons/` 里的图标另有许可，见上一节。
+代码与自绘图标以 [MIT](LICENSE) 授权（© 2026 Ayayaneru）；旧版 OpenMoji 图标的许可见上一节。
