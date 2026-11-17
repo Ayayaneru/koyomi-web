@@ -1,7 +1,7 @@
 {
   "name": "koyomi-web",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Koyomi（历）—— 本地优先的个人助手：日程、周期任务、日记、密码，以及一个能直接操作这些数据的 LLM。",
   "type": "module",
   "scripts": {
