@@ -8,10 +8,9 @@ const props = withDefaults(
 )
 
 /**
- * emoji → OpenMoji 文件码点。素材在 src/assets/task-icons/，
- * 彩色（C）和黑色描边（E）是同一张图的两个版本，只差一个后缀。
+ * emoji → 素材文件码点。素材在 src/assets/task-icons/，全部自绘（随代码按 MIT）。
+ * 彩色（color）和黑色描边（black）是同一套图形的两版，只差一个后缀。
  * 表里没有的 emoji（用户自己贴的）照原样显示，不会变成方块。
- * 授权：OpenMoji，CC BY-SA 4.0。
  */
 const CODES: Record<string, string> = {
   '🐟': '1F41F',
@@ -40,9 +39,7 @@ const CODES: Record<string, string> = {
   '🚰': '1F6B0',
   '🛒': '1F6D2',
   '🍳': '1F373',
-  '💸': '1F4B8',
-  /** 日程用的：不是任务图标，但走同一套素材，换风格时一起变 */
-  '📅': '1F4C5'
+  '💸': '1F4B8'
 }
 
 const FILES = import.meta.glob('../assets/task-icons/*.svg', {

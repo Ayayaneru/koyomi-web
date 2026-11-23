@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { getConfig, patchConfig } from '../core/db'
 
-/** color = OpenMoji 彩色（C）；line = 同一套图形的黑色描边（E） */
+/** color = 彩色插画；line = 同一套图形的黑色描边 */
 export type IconStyle = 'color' | 'line'
 
 /**

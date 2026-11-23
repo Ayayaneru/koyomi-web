@@ -479,7 +479,7 @@ onMounted(async () => {
         Koyomi（历）· 版本 {{ appVersion }}<br />
         本地优先的个人助手：日程、周期任务、日记、密码，外加一个能直接操作这些数据的 LLM。<br />
         {{ isApp ? '数据只在这台设备上，不需要服务器、域名或证书。' : '数据只在这个浏览器里；装成 APK 后只在那台设备上。' }}<br />
-        界面图标来自 Feather Icons（MIT）；任务图标来自 OpenMoji（CC BY-SA 4.0）；日记心情是自绘线条。
+        界面图标来自 Feather Icons（MIT）；任务图标是自绘插画与线条；日记心情是自绘线条。
       </div>
     </div>
 

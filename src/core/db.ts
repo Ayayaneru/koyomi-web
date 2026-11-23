@@ -312,7 +312,7 @@ export interface ConfigRow {
     festivals?: string[]
     /** 是否允许模型读写日记；不填=false（默认不给） */
     shareDiary?: boolean
-    /** 任务图标画法：color = OpenMoji 彩色，line = 黑色描边；不填=color */
+    /** 任务图标画法：color = 彩色，line = 黑色描边；不填=color */
     taskIconStyle?: 'color' | 'line'
     /** 日记标签表；不填=用 DEFAULT_DIARY_TAGS，空数组=一个标签都没有 */
     diaryTags?: DiaryTag[]

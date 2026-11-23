@@ -185,7 +185,7 @@ function taskHint(task: TaskRow): string {
                 class="list-item tap"
                 @click="openEvent(item.at)"
               >
-                <span class="avatar"><TaskIcon :icon="item.icon || '📅'" :size="22" /></span>
+                <span class="avatar"><AppIcon name="calendar" :size="20" /></span>
                 <div class="grow">
                   <div class="ellipsis">{{ item.title }}</div>
                   <div class="tiny muted">
