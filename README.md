@@ -220,8 +220,6 @@ npm test        # 17 个文件 / 203 条，全绿
 代码是 MIT（见 [LICENSE](LICENSE)），但下面这些资源各有各的许可：
 
 - **任务图标**（`src/assets/task-icons/`）：本项目自绘，随代码按 MIT 授权（1.0.2 起）。
-  1.0.1 及更早版本用的是 [OpenMoji](https://openmoji.org/)，图形部分按 **CC BY-SA 4.0** 授权：
-  > All emojis designed by OpenMoji – the open-source emoji and icon project. License: CC BY-SA 4.0
 - **节假日与调休**：内置的 2026 年数据依据国办发明电〔2025〕7 号；联网更新用 [holiday-cn](https://github.com/NateScarlet/holiday-cn)（MIT）。
 - **二十四节气表**：用 [lunar-javascript](https://github.com/6tail/lunar-javascript)（MIT）离线算好后写进代码，运行时不引依赖。
 - **农历**：浏览器内置的 `Intl.DateTimeFormat`，没有第三方数据。
@@ -229,4 +227,4 @@ npm test        # 17 个文件 / 203 条，全绿
 
 ## 许可
 
-代码与自绘图标以 [MIT](LICENSE) 授权（© 2026 Ayayaneru）；旧版 OpenMoji 图标的许可见上一节。
+代码与自绘图标以 [MIT](LICENSE) 授权（© 2026 Ayayaneru）。
